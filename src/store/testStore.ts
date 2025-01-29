@@ -29,6 +29,7 @@ export const useTestStore = create<TestStore>((set, get) => ({
   calculateResults: async (answers) => {
     try {
       set({ loading: true, error: null });
+      console.log('Calculating results...');
 
       const categoryScores = questions.map(section => {
         const categoryAnswers = section.questions
@@ -53,8 +54,14 @@ export const useTestStore = create<TestStore>((set, get) => ({
       };
 
       const user = useAuthStore.getState().user;
+      console.log('Current user:', user?.id);
+      
       if (user) {
+        console.log('Saving results to database...');
         await saveTestResults(user.id, result, sortedCategories, answers);
+        console.log('Results saved successfully');
+      } else {
+        console.error('No user found when trying to save results');
       }
 
       set({ 
@@ -75,9 +82,16 @@ export const useTestStore = create<TestStore>((set, get) => ({
     try {
       set({ loading: true, error: null });
       const user = useAuthStore.getState().user;
-      if (!user) return;
+      console.log('Loading results for user:', user?.id);
+      
+      if (!user) {
+        console.error('No user found when loading results');
+        return;
+      }
 
       const data = await getLatestTestResults(user.id);
+      console.log('Loaded test results:', data ? 'Found' : 'Not found');
+      
       if (data) {
         set({
           result: data.result,
