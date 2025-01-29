@@ -11,8 +11,23 @@ export function Results() {
   const { result, categoryScores, loadUserResults, loading, error } = useTestStore();
 
   React.useEffect(() => {
+    console.log('Loading results...');
     loadUserResults();
   }, [loadUserResults]);
+
+  // Debug logs
+  React.useEffect(() => {
+    const user = useTestStore.getState().user;
+    console.log('Auth state:', { 
+      isAuthenticated: !!user,
+      userId: user?.id,
+    });
+    console.log('Results state:', {
+      hasResult: !!result,
+      loading,
+      error
+    });
+  }, [result, loading, error]);
 
   if (loading) {
     return (
@@ -23,6 +38,7 @@ export function Results() {
   }
 
   if (error) {
+    console.error('Error loading results:', error);
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold mb-4 text-red-600">Error Loading Results</h2>
@@ -33,6 +49,7 @@ export function Results() {
   }
 
   if (!result) {
+    console.log('No results found');
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold mb-4">No Results Found</h2>
